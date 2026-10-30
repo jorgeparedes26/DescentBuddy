@@ -13,7 +13,7 @@
 # To install properly (adds to your app menu), use install.sh instead.
 
 set -e
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="."
 APPIMAGE="$SCRIPT_DIR/DescentBuddy-x86_64.AppImage"
 
 if [ ! -f "$APPIMAGE" ]; then

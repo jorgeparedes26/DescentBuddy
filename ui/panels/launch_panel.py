@@ -403,8 +403,26 @@ class _GameCard(QWidget):
         self._settings_dialog.exec()
 
     def _start_game(self) -> None:
+        import shlex
+        import os 
+
+        env_key = (
+            "D1X_LAUNCH_ARGS"
+            if self._game == Game.D1
+            else "D2X_LAUNCH_ARGS"
+        )
+        launch_args = os.getenv(env_key, "").strip()
+        
+        config = load_config()
+        #extra_args = shlex.split(config.get(f"launch_args_{self._game.value}", ""))
+        
         try:
-            self._launcher.launch(self._exe_path)
+            extra_args = shlex.split(launch_args)
+
+            self._launcher.launch(self._exe_path, extra_args)
+        except ValueError as exc:
+            self._set_status("error", f"Invalid launch arguments: {exc}")
+            return
         except (FileNotFoundError, RuntimeError, OSError) as exc:
             self._set_status("error", f"Error: {exc}")
             return

@@ -7,6 +7,8 @@ shown for both games simultaneously. INI flag editing applies to the active game
 import shutil
 import sys
 from pathlib import Path
+from PyQt6.QtWidgets import QLineEdit
+
 
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (
@@ -139,6 +141,11 @@ class SettingsDialog(QDialog):
 
         self._advanced_container = QWidget()
         self._advanced_container.setObjectName("settings-content")
+        
+        # During SettingsDialog UI construction
+        self._launch_args_edit = QLineEdit()
+        self._launch_args_edit.editingFinished.connect(self._save_launch_args)
+
         adv_layout = QVBoxLayout(self._advanced_container)
         adv_layout.setContentsMargins(0, 14, 0, 0)
         adv_layout.setSpacing(0)
@@ -149,6 +156,12 @@ class SettingsDialog(QDialog):
         layout.addStretch()
         scroll.setWidget(content)
         outer.addWidget(scroll)
+
+        # Load and save the current game's arguments
+        def _save_launch_args(self) -> None:
+            config = load_config()
+            config[f"launch_args_{self._game.value}"] = self._launch_args_edit.text().strip()
+            save_config(config)
 
     def _build_exe_section(self, layout: QVBoxLayout) -> None:
         heading = QLabel("EXECUTABLE")
